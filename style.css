@@ -509,3 +509,207 @@ footer {
     letter-spacing: 0.6px;
     flex-shrink: 0;
 }
+/* Landscape Layout */
+@media screen and (orientation: landscape) and (max-width: 850px) {
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        min-height: 100vh;
+    }
+
+    .shell {
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        padding: 8px 12px;
+        gap: 6px;
+    }
+
+    .topbar {
+        min-height: 42px;
+        height: 42px;
+        padding: 6px 12px;
+    }
+
+    .topbar h1 {
+        font-size: 20px;
+    }
+
+    .hud {
+        width: 100%;
+        min-height: 58px;
+        padding: 6px 10px;
+        gap: 8px;
+    }
+
+    .hud-item {
+        padding: 5px 9px;
+    }
+
+    .hud-item strong {
+        font-size: 15px;
+    }
+
+    .hud-item span {
+        font-size: 9px;
+    }
+
+    .frame {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+        height: auto;
+    }
+
+    #gameCanvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .controls {
+        min-height: 45px;
+        height: 45px;
+        padding: 5px 10px;
+    }
+
+    .control-btn {
+        width: 55px;
+        height: 34px;
+        font-size: 13px;
+    }
+
+    .landing {
+        padding: 15px;
+    }
+
+    .landing h1 {
+        font-size: 30px;
+    }
+
+    .landing p {
+        font-size: 12px;
+    }
+
+    .difficulty {
+        gap: 8px;
+    }
+
+    .difficulty button {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+}
+
+
+/* Extra Small Landscape Screens */
+@media screen and (orientation: landscape) and (max-width: 700px) {
+
+    .shell {
+        padding: 5px 8px;
+        gap: 4px;
+    }
+
+    .topbar {
+        height: 36px;
+        min-height: 36px;
+        padding: 4px 8px;
+    }
+
+    .topbar h1 {
+        font-size: 17px;
+    }
+
+    .hud {
+        min-height: 48px;
+        padding: 4px 7px;
+        gap: 5px;
+    }
+
+    .hud-item {
+        padding: 4px 7px;
+    }
+
+    .hud-item strong {
+        font-size: 13px;
+    }
+
+    .hud-item span {
+        font-size: 8px;
+    }
+
+    .controls {
+        height: 38px;
+        min-height: 38px;
+        padding: 3px 7px;
+    }
+
+    .control-btn {
+        width: 48px;
+        height: 29px;
+        font-size: 11px;
+    }
+
+    .landing h1 {
+        font-size: 24px;
+    }
+
+    .landing p {
+        font-size: 10px;
+    }
+
+    .difficulty button {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+}
+
+
+@media screen and (orientation: landscape) {
+
+    .shell {
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        padding: 8px 12px;
+        gap: 6px;
+    }
+
+    .frame {
+        position: relative;
+        width: 100%;
+        flex: 1;
+        min-height: 220px;
+        height: auto;
+        margin-top: 10px;
+        overflow: hidden;
+    }
+
+    .frame canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .controls {
+        height: 58px;
+        min-height: 58px;
+        padding: 6px 2px;
+    }
+
+    .hud {
+        min-height: 60px;
+        padding: 6px 10px;
+    }
+
+    .topbar {
+        min-height: 48px;
+        height: 48px;
+    }
+}
