@@ -214,11 +214,34 @@ function startGame() {
   reset();
 }
 
+async function enterMobileGameMode() {
+  if (!window.matchMedia("(max-width: 700px)").matches) return;
+
+  document.body.classList.add("game-active");
+
+  if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+    try {
+      await document.documentElement.requestFullscreen();
+    } catch {
+      // Fullscreen can be denied by browser settings or unsupported on iOS.
+    }
+  }
+
+  if (screen.orientation?.lock) {
+    try {
+      await screen.orientation.lock("landscape");
+    } catch {
+      // Orientation lock requires fullscreen support on some mobile browsers.
+    }
+  }
+}
+
 function openGame() {
   if (landing) landing.classList.add("landing-hidden");
   if (gameShell) gameShell.classList.remove("game-shell-hidden");
   resize();
   startGame();
+  enterMobileGameMode();
 }
 function update(dt) {
   if (!running) return;
@@ -261,6 +284,15 @@ function update(dt) {
   car.vy += 620 * physicsDt;
   car.x += car.vx * physicsDt;
   car.y += car.vy * physicsDt;
+  const nextRearGround = terrainY(car.x - wheelOffset);
+  const nextFrontGround = terrainY(car.x + wheelOffset);
+  const nextGround = (nextRearGround + nextFrontGround) / 2;
+  const crossedTerrain = car.y + bodyClearance >= nextGround;
+  if (crossedTerrain && car.vy >= 0) {
+    car.y = nextGround - bodyClearance;
+    car.vy = 0;
+    car.grounded = true;
+  }
   if (car.grounded) {
     const suspensionError = ground - bodyClearance - car.y;
     car.vy += suspensionError * 90 * physicsDt;
