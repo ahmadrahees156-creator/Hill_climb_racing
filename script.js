@@ -12,7 +12,6 @@ const totalCoinsEl = null;
 const toast = document.getElementById("toast");
 const startScreen = landing;
 const startGameButton = playGameButton;
-const startLevel = null;
 const gameOver = document.getElementById("over");
 const soundButton = document.getElementById("soundButton");
 const finalDist = document.getElementById("finalDist");
@@ -20,9 +19,9 @@ const finalCoins = null;
 const overBest = null;
 const overMsg = document.getElementById("overMsg");
 const status = document.getElementById("status");
-const levelLabel = null;
-const levelList = null;
-const missionText = null;
+const levelLabel = document.getElementById("levelLabel");
+const levelList = document.getElementById("levels");
+const missionText = document.getElementById("missionText");
 const nextLevelButton = null;
 const diffBtns = document.querySelectorAll(".diff");
 let audioContext = null;
@@ -93,7 +92,7 @@ function levelTarget() {
 }
 
 function renderLevels() {
-  if (!levelList || !levelLabel || !missionText || !startLevel) return;
+  if (!levelList || !levelLabel || !missionText) return;
   levelList.innerHTML = "";
   for (let number = 1; number <= 10; number++) {
     const button = document.createElement("button");
@@ -110,14 +109,12 @@ function renderLevels() {
       checkpointX = 150;
       checkpointDistance = 0;
       renderLevels();
-      startLevel.textContent = String(level).padStart(2, "0");
       if (!startScreen.classList.contains("visible")) reset();
     });
     levelList.append(button);
   }
   levelLabel.textContent = String(level).padStart(2, "0");
   missionText.textContent = `REACH ${String(levelTarget()).padStart(4, "0")} M`;
-  startLevel.textContent = String(level).padStart(2, "0");
 }
 
 function resize() {
