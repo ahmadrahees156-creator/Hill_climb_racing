@@ -5,28 +5,33 @@
     --yellow: #f7c84b;
     --muted: #768287;
 }
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 html,
 body {
     width: 100%;
     height: 100%;
     overflow: hidden;
 }
+
 html:fullscreen,
 html:fullscreen body {
     width: 100%;
     height: 100%;
     background: #d9e5df;
 }
+
 body {
     background: #d9e5df;
     color: var(--ink);
     font-family: "Barlow Condensed", Arial, sans-serif;
 }
+
 body::before {
     content: "";
     position: fixed;
@@ -39,6 +44,7 @@ body::before {
     );
     background-size: 7px 7px;
 }
+
 button {
     font: inherit;
     cursor: pointer;

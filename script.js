@@ -310,11 +310,13 @@ function update(dt) {
     car.angularVelocity -= (input.brake ? 1.4 : 0) * physicsDt;
     car.angularVelocity *= Math.pow(0.992, physicsDt * 60);
   }
+
   if (car.flipping) car.angularVelocity = car.flipDirection * 5.5;
   car.angle += car.angularVelocity * physicsDt;
   const angleFromSlope = Math.abs(
     Math.atan2(Math.sin(car.angle - slope), Math.cos(car.angle - slope)),
   );
+
   car.flipTime = car.flipping ? car.flipTime + realDt : 0;
   car.distance = Math.max(car.distance, Math.floor((car.x - 150) / 8));
   cameraX += (car.x - width * 0.28 - cameraX) * 4 * dt;
@@ -345,6 +347,7 @@ function update(dt) {
   if (car.distance >= levelTarget()) finish(`LEVEL ${level} COMPLETE`, true);
   updateParticles(realDt);
 }
+
 function burst(x, y, color) {
   for (let i = 0; i < 12; i++)
     particles.push({
@@ -356,6 +359,7 @@ function burst(x, y, color) {
       color,
     });
 }
+
 function updateParticles(dt) {
   particles.forEach((p) => {
     p.x += p.vx * dt;
@@ -365,6 +369,7 @@ function updateParticles(dt) {
   });
   particles = particles.filter((p) => p.life > 0);
 }
+
 function finish(title, completed = false) {
   running = false;
   playTone(title === "CAR FLIPPED" ? 120 : 180, 0.35, "sawtooth", 0.06);
@@ -403,6 +408,7 @@ function finish(title, completed = false) {
     setTimeout(() => playTone(880, 0.16, "sine", 0.05), 130);
   }
 }
+
 function draw() {
   ctx.clearRect(0, 0, width, height);
   drawSky();
@@ -422,6 +428,7 @@ function draw() {
   fuelMeter.style.width = `${fuel}%`;
   fuelMeter.style.background = fuel < 25 ? "#c93d32" : "#e95d32";
 }
+
 function drawSky() {
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
   gradient.addColorStop(0, "#79b7b0");
