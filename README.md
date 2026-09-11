@@ -1,7 +1,39 @@
-# Hill_climb_racing
-A 2D physics-based web game inspired by the classic Hill Climb Racing, built using HTML, CSS, and JavaScript as a collaborative team project.
+# 🏎️ Hill Climb Racing
 
-About the Project:
-Navigate various terrains, control your vehicle's acceleration and tilt to prevent flipping, and collect coins to achieve the highest distance possible without running out of fuel.
+A browser-based 2D racing game built using **HTML, CSS, and JavaScript**.
 
-our game link is - https://hill-climb-racing-woad.vercel.app/
+## 🎮 Features
+
+* 🚗 Vehicle movement
+* ⛰️ Hill-based terrain
+* ⛽ Fuel system
+* 📏 Distance tracking
+* 🏆 Best run tracking
+* 🎚️ Difficulty system
+* 🎨 Animated responsive UI
+* 🔄 Restart/New Game option
+
+## 🛠️ Technologies
+
+* HTML5
+* CSS3
+* JavaScript
+* Canvas API
+
+## 🌐 Live Demo
+
+[Play Hill Climb Racing](https://hill-climb-racing-woad.vercel.app/)
+
+## 🎮 Controls
+
+* `A` — Move/Balance backward
+* `D` — Move/Balance forward
+
+## 👥 Contributors
+
+* **Rahees Ahmad**
+* **Mansi Singh**
+
+## ⭐ Support
+
+If you like the project, consider giving it a ⭐ on GitHub.
