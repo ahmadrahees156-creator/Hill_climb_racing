@@ -389,6 +389,9 @@ function finish(title, completed = false) {
   if (!completed) {
     checkpointX = 150;
     checkpointDistance = 0;
+  } else {
+    checkpointX = car.x;
+    checkpointDistance = 0;
   }
   if (nextLevelButton) nextLevelButton.hidden = !completed || level >= 10;
   if (completed && level < 10) {
@@ -638,8 +641,7 @@ if (playGameButton) playGameButton.addEventListener("click", openGame);
 if (nextLevelButton) {
   nextLevelButton.addEventListener("click", () => {
     if (level >= 10) return;
-    checkpointX = car.x;
-    checkpointDistance = car.distance;
+    checkpointDistance = 0;
     level++;
     localStorage.setItem("hillbound-level", level);
     renderLevels();
