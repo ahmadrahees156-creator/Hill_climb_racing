@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Hill Climb Racing</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+      <section class="landing" id="landing">
+      <div class="landing-grid"></div>
+      <div class="landing-copy">
+        <span class="landing-mark">HC</span>
+        <span class="landing-kicker">HILL CLIMB / RACE01</span>
+        <h1>HILL CLIMB<br /><em>RACING</em></h1>
+        <p>Climb hard. Land clean. Chase the next horizon.</p>
+        <button id="playGame">▶ &nbsp; START TO PLAY</button>
+        <small>10 LEVELS &nbsp; / &nbsp; EASY + HARD ROUTES</small>
+      </div>
+      <div class="landing-road"></div>
+    </section>
+
+<div class="shell">
+
+    <header class="topbar">
+
+        <div class="brand">
+            <span class="brand-mark">HC</span>
+
+            <div>
+                <strong>HILL CLIMB RACING</strong>
+                <small>RALLY / 01</small>
+            </div>
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            <span id="status">READY TO RACE</span>
+        </div>
+
+        <button class="icon-button" id="soundButton" aria-label="Toggle sound">
+            <i class="ri-music-fill"></i>
+        </button>
+
+    </header>
+
+
+    <section class="hud" aria-label="Race stats">
+
+        <div class="stat">
+            <span class="label">DISTANCE</span>
+            <strong>
+                <span id="distance">0000</span>
+                <small>m</small>
+            </strong>
+        </div>
+
+        <div class="stat">
+            <span class="label">BEST RUN</span>
+            <strong>
+                <span id="best">0000</span>
+                <small>m</small>
+            </strong>
+        </div>
+
+        <div class="fuel">
+
+            <div class="fuel-top">
+                <span class="label">FUEL</span>
+                <span id="fuelNum">100%</span>
+            </div>
+
+            <div class="fuel-meter">
+                <i id="fuelMeter"></i>
+            </div>
+
+        </div>
+
+        <div class="difficulty">
+
+            <span class="label">ROUTE</span>
+
+            <div class="diffs">
+                <button class="diff" data-difficulty="easy">
+                    EASY
+                </button>
+
+                <button class="diff selected" data-difficulty="hard">
+                    HARD
+                </button>
+            </div>
+
+        </div>
+
+        <div class="coins-box">
+            <span class="coin">✦</span>
+            <strong id="coins">0</strong>
+        </div>
+
+    </section>
+
+    <section class="level-panel" aria-label="Level selection">
+        <div class="level-heading">
+            <span class="label">LEVEL</span>
+            <strong id="levelLabel">01</strong>
+        </div>
+
+        <div class="levels" id="levels" role="list" aria-label="Race levels"></div>
+
+        <div class="level-mission">
+            <span class="label">MISSION</span>
+            <strong id="missionText">REACH 0500 M</strong>
+        </div>
+    </section>
+
+
+    <section class="frame">
+
+        <canvas id="canvas" aria-label="Hillbound Rally game"></canvas>
+
+        <div class="mission">
+
+            <span class="mission-mark">
+                <i class="ri-arrow-right-up-line"></i>
+            </span>
+
+            <div>
+                <span class="label">MISSION</span>
+                <strong>KEEP IT UPRIGHT</strong>
+            </div>
+
+        </div>
+
+        <div class="toast" id="toast">
+            TAP THE PEDALS TO START
+        </div>
+
+        <div class="over" id="over">
+
+            <span class="over-kicker">
+                RUN COMPLETE
+            </span>
+
+            <strong id="overMsg">
+                OUT OF FUEL
+            </strong>
+
+            <span class="over-score">
+                DISTANCE
+                <b id="finalDist">0000</b>
+                M
+            </span>
+
+            <button id="restart">
+                <i class="ri-restart-line"></i>
+                &nbsp; PLAY AGAIN
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <nav class="controls" aria-label="Driving controls">
+
+        <button class="pedal reverse" id="brake">
+            <span>◀</span>
+            <small>BRAKE</small>
+        </button>
+
+        <div class="hint">
+            <span class="key">A</span>
+            <span class="key">D</span>
+            <span>or tap pedals</span>
+        </div>
+
+        <button class="pedal accelerate" id="gas">
+            <span>▶</span>
+            <small>THROTTLE</small>
+        </button>
+
+    </nav>
+
+
+    <footer>
+        <span>HILL CLIMB RACE</span>
+        <span>COLLECT ✦ &nbsp; LAND CLEAN &nbsp; GO FAR</span>
+        <span>v1.0</span>
+    </footer>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
