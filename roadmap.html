@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roadmap</title>
+    <link rel="stylesheet" href="roadmap.css">
+</head>
+<body>
+    <div class="mode" id="mode">
+       <span class="mode-label">Mode</span>
+       <button class="easy mode-option is-selected" type="button" data-mode="easy">Easy</button>
+       <button class="medium mode-option" type="button" data-mode="medium">Medium</button>
+       <button class="hard mode-option" type="button" data-mode="hard">Hard</button>
+    </div>
+    <a class="start-play" id="startPlay" href="index.html?play=1">Start Play <span aria-hidden="true">&#9654;</span></a>
+    <div class="levels" id="class">
+        <button class="level level1" type="button" data-level="1">Level 1</button>
+        <button class="level level2" type="button" data-level="2">Level 2</button>
+        <button class="level level3" type="button" data-level="3">Level 3</button>
+        <button class="level level4" type="button" data-level="4">Level 4</button>
+        <button class="level level5" type="button" data-level="5">Level 5</button>
+        <button class="level level6" type="button" data-level="6">Level 6</button>
+        <button class="level level7" type="button" data-level="7">Level 7</button>
+        <button class="level level8" type="button" data-level="8">Level 8</button>
+        <button class="level level9" type="button" data-level="9">Level 9</button>
+        <button class="level level10" type="button" data-level="10">Level 10</button>
+    </div>
+    <div class="launch-modal" id="launchModal" hidden>
+        <div class="launch-card" role="status" aria-live="polite">
+            <span class="launch-kicker">MISSION LOADED</span>
+            <strong id="launchLevel">LEVEL 01</strong>
+            <span id="launchMode">EASY MODE</span>
+            <div class="launch-progress"><i></i></div>
+            <small>Preparing your route...</small>
+        </div>
+    </div>
+    <script src="roadmap.js"></script>
+</body>
+</html>
