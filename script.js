@@ -8,22 +8,40 @@ const bestEl = document.getElementById("best");
 const fuelNumEl = document.getElementById("fuelNum");
 const fuelMeter = document.getElementById("fuelMeter");
 const coinsEl = document.getElementById("coins");
-const totalCoinsEl = null;
+const totalCoinsEl = document.getElementById("totalCoins");
+const landingTotalCoinsEl = document.getElementById("landingTotalCoins");
 const toast = document.getElementById("toast");
-const startScreen = landing;
-const startGameButton = playGameButton;
+const startScreen = document.getElementById("startScreen");
+const startGameButton = document.getElementById("startGame");
+const startLevel = document.getElementById("startLevel");
 const gameOver = document.getElementById("over");
+const pauseButton = document.getElementById("pauseButton");
+const pauseOverlay = document.getElementById("pauseOverlay");
 const soundButton = document.getElementById("soundButton");
 const finalDist = document.getElementById("finalDist");
-const finalCoins = null;
-const overBest = null;
+const finalCoins = document.getElementById("finalCoins");
+const overBest = document.getElementById("overBest");
 const overMsg = document.getElementById("overMsg");
 const status = document.getElementById("status");
 const levelLabel = document.getElementById("levelLabel");
 const levelList = document.getElementById("levels");
 const missionText = document.getElementById("missionText");
+const canvasDistanceEl = document.getElementById("canvasDistance");
+const canvasFuelEl = document.getElementById("canvasFuel");
+const canvasCoinsEl = document.getElementById("canvasCoins");
+const canvasTotalCoinsEl = document.getElementById("canvasTotalCoins");
 const nextLevelButton = document.getElementById("nextLevel");
 const diffBtns = document.querySelectorAll(".diff");
+const launchParams = new URLSearchParams(window.location.search);
+const requestedLevel = Number(launchParams.get("level"));
+const requestedDifficulty = launchParams.get("difficulty");
+const routeModes = ["easy", "medium", "hard"];
+let difficulty = routeModes.includes(requestedDifficulty) ? requestedDifficulty : "hard";
+const storedLevel = Number(
+  localStorage.getItem(`hillbound-level-${difficulty}`) ||
+    (difficulty === "hard" ? localStorage.getItem("hillbound-level") : 1) ||
+    1,
+);
 let audioContext = null;
 let soundEnabled = true;
 
@@ -31,14 +49,20 @@ let width = 900,
   height = 450,
   dpr = 1,
   lastTime = 0,
-  running = false;
+  running = false,
+  paused = false;
 let best = Number(localStorage.getItem("hillbound-best") || 0);
 let totalCoins = Number(localStorage.getItem("hillbound-total-coins") || 0);
-let level = Number(localStorage.getItem("hillbound-level") || 1);
-let highestLevel = Number(localStorage.getItem("hillbound-highest-level") || 1);
+let level = Number.isInteger(requestedLevel) && requestedLevel >= 1 && requestedLevel <= 10
+  ? requestedLevel
+  : storedLevel;
+let highestLevel = Number(
+  localStorage.getItem(`hillbound-highest-level-${difficulty}`) ||
+    (difficulty === "hard" ? localStorage.getItem("hillbound-highest-level") : 1) ||
+    1,
+);
 let checkpointX = 150;
 let checkpointDistance = 0;
-let difficulty = "hard";
 const input = { gas: false, brake: false };
 const car = {
   x: 150,
@@ -92,7 +116,6 @@ function levelTarget() {
 }
 
 function renderLevels() {
-  if (!levelList || !levelLabel || !missionText) return;
   levelList.innerHTML = "";
   for (let number = 1; number <= 10; number++) {
     const button = document.createElement("button");
@@ -105,16 +128,22 @@ function renderLevels() {
     button.title = button.disabled ? "Locked level" : `Play level ${number}`;
     button.addEventListener("click", () => {
       level = number;
-      localStorage.setItem("hillbound-level", level);
+      localStorage.setItem(`hillbound-level-${difficulty}`, level);
       checkpointX = 150;
       checkpointDistance = 0;
       renderLevels();
+      startLevel.textContent = String(level).padStart(2, "0");
       if (!startScreen.classList.contains("visible")) reset();
     });
     levelList.append(button);
   }
   levelLabel.textContent = String(level).padStart(2, "0");
   missionText.textContent = `REACH ${String(levelTarget()).padStart(4, "0")} M`;
+  startLevel.textContent = String(level).padStart(2, "0");
+}
+
+function renderLandingCoins() {
+  landingTotalCoinsEl.textContent = String(totalCoins);
 }
 
 function resize() {
@@ -198,50 +227,48 @@ function reset() {
   car.grounded = false;
   cameraX = Math.max(0, checkpointX - width * 0.28);
   particles = [];
-  running = startScreen ? !startScreen.classList.contains("visible") : true;
+  paused = false;
+  pauseOverlay.hidden = true;
+  pauseButton.textContent = "❚❚";
+  pauseButton.setAttribute("aria-label", "Pause game");
+  running = !startScreen.classList.contains("visible");
   gameOver.classList.remove("visible");
   toast.style.display = "none";
-  status.textContent = difficulty === "hard" ? "HARD ROUTE" : "EASY ROUTE";
+  status.textContent = `${difficulty.toUpperCase()} ROUTE`;
   renderLevels();
 }
+
+function setPauseState(nextPaused) {
+  if (startScreen.classList.contains("visible") || gameOver.classList.contains("visible")) return;
+  paused = nextPaused;
+  if (paused) {
+    running = false;
+    pauseOverlay.hidden = false;
+    pauseButton.textContent = "▶";
+    pauseButton.setAttribute("aria-label", "Resume game");
+    status.textContent = "PAUSED";
+    toast.style.display = "none";
+    return;
+  }
+  running = true;
+  pauseOverlay.hidden = true;
+  pauseButton.textContent = "❚❚";
+  pauseButton.setAttribute("aria-label", "Pause game");
+  status.textContent = `${difficulty.toUpperCase()} ROUTE`;
+  lastTime = performance.now();
+}
 function startIfNeeded() {
-  if (startScreen && startScreen.classList.contains("visible")) return;
+  if (startScreen.classList.contains("visible")) return;
   if (!running || gameOver.classList.contains("visible")) reset();
 }
 
 function startGame() {
-  if (startScreen) startScreen.classList.remove("visible");
+  startScreen.classList.remove("visible");
   reset();
 }
 
-async function enterMobileGameMode() {
-  if (!window.matchMedia("(max-width: 700px)").matches) return;
-
-  document.body.classList.add("game-active");
-
-  if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-    try {
-      await document.documentElement.requestFullscreen();
-    } catch {
-      // Fullscreen can be denied by browser settings or unsupported on iOS.
-    }
-  }
-
-  if (screen.orientation?.lock) {
-    try {
-      await screen.orientation.lock("landscape");
-    } catch {
-      // Orientation lock requires fullscreen support on some mobile browsers.
-    }
-  }
-}
-
 function openGame() {
-  if (landing) landing.classList.add("landing-hidden");
-  if (gameShell) gameShell.classList.remove("game-shell-hidden");
-  resize();
-  startGame();
-  enterMobileGameMode();
+  window.location.href = "roadmap.html";
 }
 function update(dt) {
   if (!running) return;
@@ -284,15 +311,6 @@ function update(dt) {
   car.vy += 620 * physicsDt;
   car.x += car.vx * physicsDt;
   car.y += car.vy * physicsDt;
-  const nextRearGround = terrainY(car.x - wheelOffset);
-  const nextFrontGround = terrainY(car.x + wheelOffset);
-  const nextGround = (nextRearGround + nextFrontGround) / 2;
-  const crossedTerrain = car.y + bodyClearance >= nextGround;
-  if (crossedTerrain && car.vy >= 0) {
-    car.y = nextGround - bodyClearance;
-    car.vy = 0;
-    car.grounded = true;
-  }
   if (car.grounded) {
     const suspensionError = ground - bodyClearance - car.y;
     car.vy += suspensionError * 90 * physicsDt;
@@ -310,13 +328,11 @@ function update(dt) {
     car.angularVelocity -= (input.brake ? 1.4 : 0) * physicsDt;
     car.angularVelocity *= Math.pow(0.992, physicsDt * 60);
   }
-
   if (car.flipping) car.angularVelocity = car.flipDirection * 5.5;
   car.angle += car.angularVelocity * physicsDt;
   const angleFromSlope = Math.abs(
     Math.atan2(Math.sin(car.angle - slope), Math.cos(car.angle - slope)),
   );
-
   car.flipTime = car.flipping ? car.flipTime + realDt : 0;
   car.distance = Math.max(car.distance, Math.floor((car.x - 150) / 8));
   cameraX += (car.x - width * 0.28 - cameraX) * 4 * dt;
@@ -347,7 +363,6 @@ function update(dt) {
   if (car.distance >= levelTarget()) finish(`LEVEL ${level} COMPLETE`, true);
   updateParticles(realDt);
 }
-
 function burst(x, y, color) {
   for (let i = 0; i < 12; i++)
     particles.push({
@@ -359,7 +374,6 @@ function burst(x, y, color) {
       color,
     });
 }
-
 function updateParticles(dt) {
   particles.forEach((p) => {
     p.x += p.vx * dt;
@@ -369,14 +383,13 @@ function updateParticles(dt) {
   });
   particles = particles.filter((p) => p.life > 0);
 }
-
 function finish(title, completed = false) {
   running = false;
   playTone(title === "CAR FLIPPED" ? 120 : 180, 0.35, "sawtooth", 0.06);
   setTimeout(() => playTone(80, 0.28, "square", 0.04), 120);
   overMsg.textContent = title;
   finalDist.textContent = String(car.distance).padStart(4, "0");
-  if (finalCoins) finalCoins.textContent = car.coins;
+  finalCoins.textContent = car.coins;
   const newBest = car.distance > best;
   gameOver.classList.add("visible");
   status.textContent = "RUN COMPLETE";
@@ -385,33 +398,31 @@ function finish(title, completed = false) {
     localStorage.setItem("hillbound-best", best);
   }
   finalDist.classList.toggle("new-best-score", newBest);
-  if (overBest) {
-    overBest.textContent = newBest
-      ? `NEW BEST RUN ${String(best).padStart(4, "0")} M`
-      : `BEST RUN ${String(best).padStart(4, "0")} M`;
-    overBest.classList.toggle("new-best", newBest);
-  }
+  overBest.textContent = newBest
+    ? `NEW BEST RUN ${String(best).padStart(4, "0")} M`
+    : `BEST RUN ${String(best).padStart(4, "0")} M`;
+  overBest.classList.toggle("new-best", newBest);
   if (!completed) {
     checkpointX = 150;
     checkpointDistance = 0;
-  } else {
-    checkpointX = car.x;
-    checkpointDistance = 0;
   }
-  if (nextLevelButton) nextLevelButton.hidden = !completed || level >= 10;
+  nextLevelButton.hidden = !completed || level >= 10;
   if (completed && level < 10) {
     highestLevel = Math.max(highestLevel, level + 1);
-    localStorage.setItem("hillbound-highest-level", highestLevel);
+    localStorage.setItem(`hillbound-highest-level-${difficulty}`, highestLevel);
     renderLevels();
-    if (overBest && !newBest) {
+    if (!newBest) {
       overBest.textContent = `LEVEL ${level} CLEARED / NEXT: ${String(level + 1).padStart(2, "0")}`;
     }
-    if (overBest) overBest.classList.add("new-best");
+    overBest.classList.add("new-best");
     playTone(660, 0.12, "sine", 0.05);
     setTimeout(() => playTone(880, 0.16, "sine", 0.05), 130);
   }
+  paused = false;
+  pauseOverlay.hidden = true;
+  pauseButton.textContent = "❚❚";
+  pauseButton.setAttribute("aria-label", "Pause game");
 }
-
 function draw() {
   ctx.clearRect(0, 0, width, height);
   drawSky();
@@ -423,26 +434,31 @@ function draw() {
   drawCar();
   ctx.restore();
   distanceEl.textContent = String(car.distance).padStart(4, "0");
+  canvasDistanceEl.textContent = String(car.distance).padStart(4, "0");
   bestEl.textContent = String(best).padStart(4, "0");
   coinsEl.textContent = car.coins;
-  if (totalCoinsEl) totalCoinsEl.textContent = totalCoins;
+  canvasCoinsEl.textContent = car.coins;
+  totalCoinsEl.textContent = totalCoins;
+  canvasTotalCoinsEl.textContent = totalCoins;
+  renderLandingCoins();
   const fuel = Math.max(0, Math.round(car.fuel));
   fuelNumEl.textContent = `${fuel}%`;
+  canvasFuelEl.textContent = `${fuel}%`;
   fuelMeter.style.width = `${fuel}%`;
   fuelMeter.style.background = fuel < 25 ? "#c93d32" : "#e95d32";
 }
-
 function drawSky() {
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, "#79b7b0");
-  gradient.addColorStop(1, "#d7d5ae");
+  gradient.addColorStop(0, "#7c9d9f");
+  gradient.addColorStop(0.5, "#c9b690");
+  gradient.addColorStop(1, "#d8c9a7");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = "rgba(255,236,168,.45)";
+  ctx.fillStyle = "rgba(255, 220, 116, 0.48)";
   ctx.beginPath();
   ctx.arc(width * 0.8, height * 0.22, 43, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "rgba(47,103,104,.23)";
+  ctx.fillStyle = "rgba(31, 49, 52, 0.18)";
   for (let x = -100; x < width + 200; x += 180) {
     ctx.beginPath();
     ctx.moveTo(x, height * 0.62);
@@ -458,7 +474,7 @@ function drawTerrain() {
     ctx.lineTo(x, terrainY(x));
   ctx.lineTo(cameraX + width + 40, height);
   ctx.closePath();
-  ctx.fillStyle = "#315c53";
+  ctx.fillStyle = "#2d4b4d";
   ctx.fill();
   ctx.beginPath();
   for (
@@ -469,7 +485,7 @@ function drawTerrain() {
     if (x === Math.floor(cameraX / 18) * 18) ctx.moveTo(x, terrainY(x));
     else ctx.lineTo(x, terrainY(x));
   }
-  ctx.strokeStyle = "#e6cf87";
+  ctx.strokeStyle = "#f2b642";
   ctx.lineWidth = 5;
   ctx.stroke();
 }
@@ -511,27 +527,27 @@ function drawCar() {
   ctx.save();
   ctx.translate(car.x, car.y);
   ctx.rotate(car.angle);
-  ctx.fillStyle = "rgba(20,37,43,.2)";
+  ctx.fillStyle = "rgba(15, 23, 27, 0.25)";
   ctx.beginPath();
   ctx.ellipse(0, 28, 34, 5, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#14252b";
+  ctx.fillStyle = "#0d1419";
   ctx.beginPath();
   ctx.arc(-23, 23, 11, 0, Math.PI * 2);
   ctx.arc(23, 23, 11, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#aab7b3";
+  ctx.fillStyle = "#d5c39d";
   ctx.beginPath();
   ctx.arc(-23, 23, 5, 0, Math.PI * 2);
   ctx.arc(23, 23, 5, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#f5f1e8";
+  ctx.fillStyle = "#121a1d";
   ctx.beginPath();
   ctx.arc(-23, 23, 2, 0, Math.PI * 2);
   ctx.arc(23, 23, 2, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#2f6e68";
-  ctx.strokeStyle = "#14252b";
+  ctx.fillStyle = "#e97739";
+  ctx.strokeStyle = "#0d1419";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(-38, -7);
@@ -543,7 +559,7 @@ function drawCar() {
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
-  ctx.fillStyle = "#e95d32";
+  ctx.fillStyle = "#f2b642";
   ctx.beginPath();
   ctx.moveTo(-20, -16);
   ctx.lineTo(-10, -29);
@@ -551,7 +567,7 @@ function drawCar() {
   ctx.lineTo(25, -16);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = "#b8d9cf";
+  ctx.fillStyle = "#d9d1b9";
   ctx.beginPath();
   ctx.moveTo(-7, -25);
   ctx.lineTo(4, -25);
@@ -560,7 +576,7 @@ function drawCar() {
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
-  ctx.fillStyle = "#f7c84b";
+  ctx.fillStyle = "#f2b642";
   ctx.beginPath();
   ctx.moveTo(-5, -16);
   ctx.lineTo(3, -16);
@@ -568,10 +584,10 @@ function drawCar() {
   ctx.lineTo(-7, 15);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = "#14252b";
+  ctx.fillStyle = "#0d1419";
   ctx.fillRect(7, -15, 2, 29);
   ctx.fillRect(-29, -1, 58, 2);
-  ctx.strokeStyle = "#f7c84b";
+  ctx.strokeStyle = "#f2b642";
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(-23, -17);
@@ -579,12 +595,12 @@ function drawCar() {
   ctx.lineTo(18, -31);
   ctx.lineTo(25, -17);
   ctx.stroke();
-  ctx.fillStyle = "#f5f1e8";
+  ctx.fillStyle = "#f7f0d9";
   ctx.beginPath();
   ctx.arc(30, -4, 3, 0, Math.PI * 2);
   ctx.arc(-30, -4, 3, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#e95d32";
+  ctx.fillStyle = "#e97739";
   ctx.fillRect(-38, 8, 6, 5);
   ctx.fillRect(32, 8, 6, 5);
   ctx.restore();
@@ -599,7 +615,7 @@ function loop(time) {
 function bindPedal(button, key) {
   const down = (e) => {
     e.preventDefault();
-    if ((startScreen && startScreen.classList.contains("visible")) || gameOver.classList.contains("visible")) return;
+    if (startScreen.classList.contains("visible") || gameOver.classList.contains("visible")) return;
     if (!input[key]) playTone(key === "gas" ? 220 : 150, 0.08, "triangle");
     input[key] = true;
     button.classList.add("active");
@@ -618,6 +634,10 @@ function bindPedal(button, key) {
 }
 bindPedal(document.getElementById("gas"), "gas");
 bindPedal(document.getElementById("brake"), "brake");
+pauseButton.addEventListener("click", () => {
+  if (startScreen.classList.contains("visible") || gameOver.classList.contains("visible")) return;
+  setPauseState(!paused);
+});
 soundButton.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
   soundButton.textContent = soundEnabled ? "♪" : "×";
@@ -628,36 +648,53 @@ soundButton.addEventListener("click", () => {
   if (soundEnabled) playTone(660, 0.12, "sine", 0.04);
 });
 window.addEventListener("keydown", (e) => {
-  if ((startScreen && startScreen.classList.contains("visible")) || gameOver.classList.contains("visible")) return;
+  if (e.key.toLowerCase() === "p") {
+    if (!startScreen.classList.contains("visible") && !gameOver.classList.contains("visible")) {
+      setPauseState(!paused);
+    }
+    return;
+  }
+  if (startScreen.classList.contains("visible") || gameOver.classList.contains("visible") || paused) return;
   if (e.key.toLowerCase() === "d" || e.key === "ArrowRight") {
     if (!input.gas) playTone(220, 0.08, "triangle");
     input.gas = true;
+    document.getElementById("gas").classList.add("active");
   }
   if (e.key.toLowerCase() === "a" || e.key === "ArrowLeft") {
     if (!input.brake) playTone(150, 0.08, "triangle");
     input.brake = true;
+    document.getElementById("brake").classList.add("active");
   }
 });
 window.addEventListener("keyup", (e) => {
-  if (e.key.toLowerCase() === "d" || e.key === "ArrowRight") input.gas = false;
-  if (e.key.toLowerCase() === "a" || e.key === "ArrowLeft") input.brake = false;
+  if (e.key.toLowerCase() === "d" || e.key === "ArrowRight") {
+    input.gas = false;
+    document.getElementById("gas").classList.remove("active");
+  }
+  if (e.key.toLowerCase() === "a" || e.key === "ArrowLeft") {
+    input.brake = false;
+    document.getElementById("brake").classList.remove("active");
+  }
 });
 document.getElementById("restart").addEventListener("click", reset);
-startGameButton.addEventListener("click", openGame);
-if (playGameButton) playGameButton.addEventListener("click", openGame);
-if (nextLevelButton) {
-  nextLevelButton.addEventListener("click", () => {
-    if (level >= 10) return;
-    checkpointDistance = 0;
-    level++;
-    localStorage.setItem("hillbound-level", level);
-    renderLevels();
-    reset();
-  });
-}
+startGameButton.addEventListener("click", startGame);
+playGameButton.addEventListener("click", openGame);
+
+pauseOverlay.addEventListener("click", () => setPauseState(false));
+nextLevelButton.addEventListener("click", () => {
+  if (level >= 10) return;
+  checkpointX = car.x;
+  checkpointDistance = car.distance;
+  level++;
+  localStorage.setItem(`hillbound-level-${difficulty}`, level);
+  renderLevels();
+  reset();
+});
 diffBtns.forEach((button) =>
   button.addEventListener("click", () => {
     difficulty = button.dataset.difficulty;
+    level = Number(localStorage.getItem(`hillbound-level-${difficulty}`) || 1);
+    highestLevel = Number(localStorage.getItem(`hillbound-highest-level-${difficulty}`) || 1);
     diffBtns.forEach((item) =>
       item.classList.toggle("selected", item === button),
     );
@@ -670,6 +707,18 @@ window.addEventListener("resize", resize);
 resize();
 buildWorld();
 renderLevels();
+renderLandingCoins();
 car.y = terrainY(car.x) - 34;
 bestEl.textContent = String(best).padStart(4, "0");
+
+if (new URLSearchParams(window.location.search).get("play") === "1") {
+  landing.classList.add("landing-hidden");
+  gameShell.classList.remove("game-shell-hidden");
+  diffBtns.forEach((button) =>
+    button.classList.toggle("selected", button.dataset.difficulty === difficulty),
+  );
+  resize();
+  startGame();
+}
+
 requestAnimationFrame(loop);
