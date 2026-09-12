@@ -539,8 +539,8 @@ footer,
 }
 .over-score {
   font-family: "Space Mono", monospace;
-  font-size: 15px;
-  color:white;
+  font-size: 11px;
+  color: white;
   margin: 10px 0 19px;
 }
 .over-score b {
