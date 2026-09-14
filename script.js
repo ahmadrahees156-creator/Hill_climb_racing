@@ -17,6 +17,7 @@ const startLevel = document.getElementById("startLevel");
 const gameOver = document.getElementById("over");
 const pauseButton = document.getElementById("pauseButton");
 const pauseOverlay = document.getElementById("pauseOverlay");
+const backToRoadmapButton = document.getElementById("backToRoadmap");
 const soundButton = document.getElementById("soundButton");
 const finalDist = document.getElementById("finalDist");
 const finalCoins = document.getElementById("finalCoins");
@@ -637,6 +638,9 @@ bindPedal(document.getElementById("brake"), "brake");
 pauseButton.addEventListener("click", () => {
   if (startScreen.classList.contains("visible") || gameOver.classList.contains("visible")) return;
   setPauseState(!paused);
+});
+backToRoadmapButton.addEventListener("click", () => {
+  window.location.href = "roadmap.html";
 });
 soundButton.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
