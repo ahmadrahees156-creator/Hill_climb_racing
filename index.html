@@ -10,12 +10,11 @@
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" type="image" href="favicon.jpeg">
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <section class="landing" id="landing">
-      <div class="landing-grid"></div>
+     
       <div class="landing-copy">
         <span class="landing-mark">HC</span>
         <span class="landing-kicker">HILL CLIMB RACE / 01</span>
@@ -29,12 +28,12 @@
         <button id="playGame">▶ &nbsp; START TO PLAY</button>
         <p>10 LEVELS &nbsp; / &nbsp; EASY + HARD ROUTES</p>
       </div>
-      <div class="landing-road"></div>
+     
     </section>
 
     <main class="shell full-screen-game game-shell-hidden">
       
-      <header class="topbar">
+       <header class="topbar">
         <div class="brand">
           <span class="brand-mark">HB</span>
           <div><strong>HILL CLIMB RACE</strong><small>RACE / 01</small></div>
@@ -45,9 +44,9 @@
         <button class="icon-button" id="soundButton" aria-label="Toggle sound">
           ♪
         </button>
-      </header>
+      </header> 
 
-      <section class="hud" aria-label="Race stats">
+       <section class="hud" aria-label="Race stats">
         <div class="stat">
           <span class="label">DISTANCE</span
           ><strong><span id="distance">0000</span><small> m</small></strong>
@@ -75,7 +74,7 @@
             ><button class="diff" data-difficulty="medium">MEDIUM</button
             ><button class="diff selected" data-difficulty="hard">HARD</button>
           </div>
-        </div>
+        </div> 
         <div class="coins-box">
           <span class="coin">✦</span><strong id="coins">0</strong>
           <small class="coin-total">TOTAL <b id="totalCoins">0</b></small>
@@ -108,8 +107,9 @@
         <div class="pause-overlay" id="pauseOverlay" hidden>
           <div class="pause-card" role="status" aria-live="polite">
             <span class="over-kicker">PAUSED</span>
-            <strong>TAKE A BREATHER</strong>
+            <strong>TAKE A BREATHE</strong>
             <span class="over-score">PRESS THE BUTTON TO RESUME</span>
+            <button class="pause-back" id="backToRoadmap" type="button">BACK TO LEVEL</button>
           </div>
         </div>
         <div class="over" id="over">
@@ -133,7 +133,7 @@
         <div class="hint">
           <span class="key">A</span><span class="key">D</span
           ><span>or tap pedals</span>
-        </div>
+        </div> 
         <button class="pedal accelerate" id="gas" aria-label="Throttle">
           <span class="pedal-icon" aria-hidden="true"></span>
         </button>
@@ -141,7 +141,7 @@
       <footer>
         <span>HILL CLIMB RACE</span
         ><span>COLLECT ✦ &nbsp; LAND CLEAN &nbsp; GO FAR</span><span>v1.0</span>
-      </footer>
+      </footer> 
     </main>
     <script src="script.js"></script>
   </body>
